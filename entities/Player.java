@@ -5,6 +5,7 @@ package com.benjamindebotte.labyrinth.entities;
 
 import com.benjamindebotte.labyrinth.containers.Case;
 import com.benjamindebotte.labyrinth.events.game.BonusRetrievedEvent;
+import com.benjamindebotte.labyrinth.events.game.GameWinEvent;
 
 /**
  * @author benjamindebotte
@@ -26,6 +27,8 @@ public class Player extends Entity {
 		if(newPosition.getObj() != null){
 			if(newPosition.getObj() instanceof Bonus)
 				postEvent(new BonusRetrievedEvent( (Bonus)( newPosition.getObj() )) );
+			else if(newPosition.getObj() instanceof FinishLine)
+				postEvent(new GameWinEvent(this));
 			else
 				return false;
 		}

@@ -1,6 +1,7 @@
 package com.benjamindebotte.labyrinth.gui;
 
 import java.awt.GridLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.util.Timer;
@@ -37,12 +38,16 @@ public class LabyFrame extends JFrame   {
 		currentGame = null;
 		refresh = null;
 		FRAME_RATE = 0;
+		this.setResizable(false);
+		
 	}
 	
 	protected void frameInit() {
 		super.frameInit();
+		
 		this.setTitle("Labyrinthe");
-		this.setBounds(100, 100, 800, 800);
+		int size = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
+		this.setBounds(100, 100, size, size);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 		this.getContentPane().add(new JLabel());
@@ -56,7 +61,7 @@ public class LabyFrame extends JFrame   {
 		refresh = new Timer(true);
 		refresh.scheduleAtFixedRate(new TimerTask() {
 										public void run() {
-											draw();
+											refreshComponent();
 										}
 									}, 0, FRAME_RATE);
 	}
@@ -71,17 +76,21 @@ public class LabyFrame extends JFrame   {
 		this.currentGame = component.getGame();
 		FRAME_RATE = currentGame.getGameRate() / 2;
 		initTimers();
-
-
-		revalidate();
-		repaint();
 	}
 	
-	private void draw() {
+	private void refreshComponent() {
+		
+		component.refreshGameStatus();
+		
 		if(this.getContentPane().getComponent(0) instanceof JLabel)
 			((JLabel)this.getContentPane().getComponent(0)).setText("Score : " + currentGame.getScore());
-		component.repaint();
-		this.repaint();
+		
+		component.refreshGUI();
+		
+		revalidate();		
+		repaint();
+		
+
 	}
 
 	class LabyMenuBar extends JMenuBar {
@@ -97,7 +106,7 @@ public class LabyFrame extends JFrame   {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
-						setComponent(new LabyComponent(new Game(51,51))); //TODO : Modifier la taille
+						setComponent(new LabyComponent(new Game(21,21))); //TODO : Modifier la taille
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

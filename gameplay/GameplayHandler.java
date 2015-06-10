@@ -7,6 +7,7 @@ import com.benjamindebotte.labyrinth.containers.Labyrinth;
 import com.benjamindebotte.labyrinth.entities.Bonus;
 import com.benjamindebotte.labyrinth.events.game.BonusRetrievedEvent;
 import com.benjamindebotte.labyrinth.events.game.GameEvent;
+import com.benjamindebotte.labyrinth.events.game.GameOverEvent;
 import com.benjamindebotte.labyrinth.events.game.MonsterEncounterEvent;
 
 /**
@@ -16,23 +17,30 @@ import com.benjamindebotte.labyrinth.events.game.MonsterEncounterEvent;
 public class GameplayHandler {
 	
 	private int score;
+	private Game currentGame;
+	private int lives;
 	
+	public int getLives() {
+		return lives;
+	}
+	public void setLives(int lives) {
+		this.lives = lives;
+	}
 	public int getScore() {
 		return score;
 	}
-	
-	private Labyrinth laby;
-	/**
-	 * 
-	 */
-	public GameplayHandler(Labyrinth laby) {
-		this.laby = laby;
+		
+	public GameplayHandler(Game g) {
+		this.currentGame = g;
 		this.score = 0;
+		this.lives = 3;
 	}
 	
 	public void processGameEvent(GameEvent e) {
 		if(e instanceof MonsterEncounterEvent){
-			System.out.println("MORT !");
+			if(--lives == 0)
+				currentGame.addEvent(new GameOverEvent(e.getSender()));
+			
 		} else if(e instanceof BonusRetrievedEvent) {
 			processScoreEvent((BonusRetrievedEvent)e);
 		}
@@ -40,7 +48,6 @@ public class GameplayHandler {
 	
 	private void processScoreEvent(BonusRetrievedEvent e) {
 		score += ((Bonus)e.getSender()).getNbPoints();
-		System.out.println("New score : " + score);
 	}
 
 }

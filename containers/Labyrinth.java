@@ -8,6 +8,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 
 import com.benjamindebotte.labyrinth.entities.Bonus;
+import com.benjamindebotte.labyrinth.entities.FinishLine;
 import com.benjamindebotte.labyrinth.entities.LabyObject;
 import com.benjamindebotte.labyrinth.entities.Monster;
 import com.benjamindebotte.labyrinth.entities.Player;
@@ -50,11 +51,16 @@ public class Labyrinth implements Serializable {
 		this.assignObject(this.getMap().getCase(1, 0), this.player);
 	}
 	
+	private void addFinishLine() {
+		this.assignObject(this.getMap().getCase(this.getMap().getLength() - 2, this.getMap().getWidth() - 1), new FinishLine());
+	}
+	
 	private void generateLabyrinth() throws Exception {
 			generateLevel();
 			generateMonsters();
 			generateItems();
 			addPlayer();
+			addFinishLine();
 	}
 	
 	private void generateLevel() throws Exception {

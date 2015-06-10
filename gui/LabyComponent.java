@@ -2,17 +2,26 @@ package com.benjamindebotte.labyrinth.gui;
 
 import java.awt.Color;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.File;
+import java.io.FilePermission;
+import java.io.IOException;
 import java.util.Observable;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.plaf.metal.MetalIconFactory.FolderIcon16;
 
 import com.benjamindebotte.labyrinth.containers.Labyrinth;
+import com.benjamindebotte.labyrinth.entities.Bonus;
 import com.benjamindebotte.labyrinth.entities.Entity;
+import com.benjamindebotte.labyrinth.entities.FinishLine;
 import com.benjamindebotte.labyrinth.entities.LabyObject;
 import com.benjamindebotte.labyrinth.entities.Monster;
 import com.benjamindebotte.labyrinth.entities.Player;
@@ -26,12 +35,19 @@ private static final long serialVersionUID = 2337634060590226403L;
 	
 	private Timer refresh;
 	private Game game;
-
 	private JLabel[][] GUI;
+	private boolean iconsRescaled;
 	
 	private LabyKeyListener listener;
-	
 	private int FRAME_RATE; //ms
+	
+	/* Icônes pré-chargés */
+	private ImageIcon iconPlayer;
+	private ImageIcon iconMonster;
+	private ImageIcon iconWall;
+	private ImageIcon iconItem;
+	private ImageIcon iconFloor;
+	private ImageIcon iconFinish;
 	
 	
 	public LabyComponent(Game gameHandler) {
@@ -40,15 +56,30 @@ private static final long serialVersionUID = 2337634060590226403L;
 		
 		this.game = gameHandler;
 		
-		initKeyListener();		
+		initKeyListener();	
+		
+		loadIcons();
+
 		initGUI();
+		
 
 		this.setFocusable(true);
 
 		
 
 		
-		}
+	}
+	
+	private void loadIcons(){
+		/* On charge les icônes */
+		iconPlayer = new ImageIcon("./img/Player.png");
+		iconWall = new ImageIcon("./img/Wall.png");
+		iconItem = new ImageIcon("./img/Item.jpg");
+		iconFloor = new ImageIcon("./img/Floor.png");
+		iconMonster = new ImageIcon("./img/Monster.png");
+		iconFinish = new ImageIcon("./img/FinishLine.png");
+		iconsRescaled = false;
+	}
 	
 	private void initGUI() {
 		if(game.getLabyrinth() == null)
@@ -70,17 +101,40 @@ private static final long serialVersionUID = 2337634060590226403L;
 	}
 	
 	
+	public void refreshGameStatus() {
+		
+	}
+	
+	
+	public void refreshGUI() {
+		
+		this.requestFocusInWindow();
+
+		if(!iconsRescaled){
+			if(GUI[0][0].getWidth() != 0 && GUI[0][0].getHeight() != 0) {
+				iconPlayer.setImage(iconPlayer.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
+				iconWall.setImage(iconWall.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
+				iconItem.setImage(iconItem.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
+				iconFloor.setImage(iconFloor.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
+				iconMonster.setImage(iconMonster.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
+				iconFinish.setImage(iconFinish.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
+				iconsRescaled = true;
+			}
+		}
+		
+		
+		Labyrinth laby = game.getLabyrinth();
+
+		for(int i = 0; i < laby.getMap().getLength(); i++) 
+			for(int j = 0; j < laby.getMap().getWidth(); j++) 
+				objectToGraphics(GUI[i][j], laby.getMap().getCase(i, j).getObj());
+			
+		repaint();
+		
+	}
 	
 	@Override
 	public void repaint() {
-		this.requestFocusInWindow();
-
-		Labyrinth laby = game.getLabyrinth();
-
-			for(int i = 0; i < laby.getMap().getLength(); i++) 
-				for(int j = 0; j < laby.getMap().getWidth(); j++) 
-					objectToGraphics(GUI[i][j], laby.getMap().getCase(i, j).getObj());
-
 		super.repaint();
 	}
 	
@@ -93,21 +147,25 @@ private static final long serialVersionUID = 2337634060590226403L;
 
 	public void objectToGraphics(JLabel graphObject, LabyObject obj) {
 		graphObject.setOpaque(true);
-		
+		ImageIcon icon = null;
 		if(obj instanceof Wall){
-			graphObject.setBackground(new Color(12,12,12));
+			icon = iconWall;
 		} else if (obj == null) {
-			graphObject.setBackground(new Color(130,130,130));
+			icon = (iconFloor);
 		} else if(obj instanceof Entity) {
 			if(obj instanceof Monster)
-				graphObject.setBackground(new Color(255,40,20));
+				icon = (iconMonster);
 			else if(obj instanceof Player)
-				graphObject.setBackground(new Color(255,160,20));
-			else
-				graphObject.setBackground(new Color(20,130,20));
+				icon = (iconPlayer);
+		} else if(obj instanceof Bonus) {
+			icon = (iconItem);
+		} else if(obj instanceof FinishLine) {
+			icon = iconFinish;
 		}
+		if(icon == null)
+			return;
 		
-		
+		graphObject.setIcon(icon);
 		
 	}
 

@@ -44,7 +44,6 @@ public class MainWindow {
 	public MainWindow() {
 		try {
 			frame = new LabyFrame();
-			
 
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
