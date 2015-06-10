@@ -46,8 +46,8 @@ public class LabyFrame extends JFrame   {
 		super.frameInit();
 		
 		this.setTitle("Labyrinthe");
-		int size = Toolkit.getDefaultToolkit().getScreenSize().height - 100;
-		this.setBounds(100, 100, size, size);
+		int size = Toolkit.getDefaultToolkit().getScreenSize().height - 200;
+		this.setBounds(100, 100, size - 50, size);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
 		this.getContentPane().add(new JLabel());
@@ -106,7 +106,7 @@ public class LabyFrame extends JFrame   {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
-						setComponent(new LabyComponent(new Game(21,21))); //TODO : Modifier la taille
+						setComponent(new LabyComponent(new Game(11,11))); //TODO : Modifier la taille
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
