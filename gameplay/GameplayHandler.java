@@ -5,6 +5,7 @@ package com.benjamindebotte.labyrinth.gameplay;
 
 import com.benjamindebotte.labyrinth.containers.Labyrinth;
 import com.benjamindebotte.labyrinth.entities.Bonus;
+import com.benjamindebotte.labyrinth.entities.Monster;
 import com.benjamindebotte.labyrinth.events.game.BonusRetrievedEvent;
 import com.benjamindebotte.labyrinth.events.game.GameEvent;
 import com.benjamindebotte.labyrinth.events.game.GameOverEvent;
@@ -38,8 +39,12 @@ public class GameplayHandler {
 	
 	public void processGameEvent(GameEvent e) {
 		if(e instanceof MonsterEncounterEvent){
-			if(--lives == 0)
+			if(--lives == 0){ /* On perd une vie */
 				currentGame.addEvent(new GameOverEvent(e.getSender()));
+				return;
+			}
+			/* On supprime le monstre. */
+			currentGame.getLabyrinth().getObjects().remove(((MonsterEncounterEvent) e).getEncounteredMonster());
 			
 		} else if(e instanceof BonusRetrievedEvent) {
 			processScoreEvent((BonusRetrievedEvent)e);

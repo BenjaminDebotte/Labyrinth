@@ -40,7 +40,7 @@ public class Monster extends Entity {
 		LabyObject obj = newPosition.getObj();
 		if(obj != null){
 			if(obj instanceof Player) {
-				postEvent(new MonsterEncounterEvent(this));
+				postEvent(new MonsterEncounterEvent(this,this));
 			} else {
 				return false;
 			}

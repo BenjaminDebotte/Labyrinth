@@ -130,6 +130,10 @@ public class Game implements Observer {
 	public boolean isGameEnded() {
 		return gameState != GAME_STATE.NOT_FINISHED;
 	}
+	
+	public int getLives() {
+		return gameplayHandler.getLives();
+	}
 
 
 private void setEndGameAsWon() {	

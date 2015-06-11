@@ -50,7 +50,10 @@ public class LabyFrame extends JFrame   {
 		this.setBounds(100, 100, size - 50, size);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.getContentPane().setLayout(new BoxLayout(this.getContentPane(), BoxLayout.Y_AXIS));
-		this.getContentPane().add(new JLabel());
+		
+		this.getContentPane().add(new JLabel()); //Score
+		this.getContentPane().add(new JLabel()); //Vies
+		
 
 	}
 	
@@ -82,8 +85,11 @@ public class LabyFrame extends JFrame   {
 		
 		component.refreshGameStatus();
 		
-		if(this.getContentPane().getComponent(0) instanceof JLabel)
-			((JLabel)this.getContentPane().getComponent(0)).setText("Score : " + currentGame.getScore());
+		/* Premier component : Texte de Score */
+		((JLabel)this.getContentPane().getComponent(0)).setText("Score : " + currentGame.getScore());
+		
+		/* Deuxième component : Texte des vies */
+		((JLabel)this.getContentPane().getComponent(1)).setText("Vie(s) : " + currentGame.getLives());
 		
 		component.refreshGUI();
 		
@@ -106,7 +112,7 @@ public class LabyFrame extends JFrame   {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					try {
-						setComponent(new LabyComponent(new Game(11,11))); //TODO : Modifier la taille
+						setComponent(new LabyComponent(new Game(31,31))); //TODO : Modifier la taille
 					} catch (Exception e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
