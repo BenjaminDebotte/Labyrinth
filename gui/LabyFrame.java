@@ -1,5 +1,6 @@
 package com.benjamindebotte.labyrinth.gui;
 
+import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.io.IOException;
@@ -15,6 +16,8 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSpinner;
 import javax.swing.SwingConstants;
 
 import com.benjamindebotte.labyrinth.filesystem.LabyrinthFileHandler;
@@ -43,7 +46,37 @@ public class LabyFrame extends JFrame {
 			}
 
 		}
+		
+		class LabySpinner extends JSpinner {
 
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = -5822061973675736557L;
+
+			@Override
+			public Object getValue() {
+				return (int)super.getValue();
+			}
+
+			@Override
+			public Object getNextValue() {
+				return (int)getValue() + 2 > 0 ? (int)getValue() + 2 : getValue();			}
+
+			@Override
+			public Object getPreviousValue() {
+				return (int)getValue() - 2 > 0 ? (int)getValue() - 2 : getValue();
+			}
+			
+			@Override
+			public void setValue(Object obj) {
+				if((int)obj % 2 == 0)
+					throw new IllegalArgumentException("Les nombres pairs ne sont pas acceptés.");
+				super.setValue(obj);
+			}
+			
+		}
+		
 		private static final long serialVersionUID = 1L;
 
 		public LabyMenuBar() {
@@ -59,17 +92,31 @@ public class LabyFrame extends JFrame {
 
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					try {
-						LabyFrame.this.setComponent(new LabyComponent(new Game(
-								31, 31))); // TODO : Modifier la taille
-					} catch (Exception e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
+						try {
+							JPanel panel = new JPanel(new GridLayout(0, 2));
+							JSpinner spinnerL = new LabySpinner();
+							spinnerL.setValue((int)31);
+							
+							panel.add(new JLabel("Taille des côtés : "));
+							panel.add(spinnerL);
+
+						    int result = JOptionPane.showConfirmDialog(null, panel, "Veuillez saisir la dimension de votre labyrinthe", JOptionPane.OK_CANCEL_OPTION);
+						    if (result == JOptionPane.OK_OPTION) {
+						    	int length = (int) spinnerL.getValue();
+						    	int width = length;
+						    	
+						    	
+						    	
+						    		LabyFrame.this.setComponent(new LabyComponent(new Game(
+									length,width ))); 
+						    }
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage(), e1.getClass().toString(), JOptionPane.ERROR_MESSAGE);
+						} 
+
 				}
 			}));
-			FICHIER.add(new JMenuItem(new AbstractAction(
-					"Sauvegarder Labyrinthe") {
+			FICHIER.add(new JMenuItem(new AbstractAction("Sauvegarder Labyrinthe") {
 
 				/**
 				 *
@@ -94,8 +141,7 @@ public class LabyFrame extends JFrame {
 						try {
 							fh.save(LabyFrame.this.currentGame.getLabyrinth());
 						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+							JOptionPane.showMessageDialog(null, e1.getMessage(), e1.getClass().toString(), JOptionPane.ERROR_MESSAGE);
 						}
 					}
 					LabyFrame.this.currentGame.startTimers();
@@ -124,12 +170,9 @@ public class LabyFrame extends JFrame {
 							LabyFrame.this.currentGame = new Game(fh.load());
 							LabyFrame.this.setComponent(new LabyComponent(
 									LabyFrame.this.currentGame));
-						} catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						} catch (ClassNotFoundException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
+						} catch (Exception e1) {
+							JOptionPane.showMessageDialog(null, e1.getMessage(), e1.getClass().toString(), JOptionPane.ERROR_MESSAGE);
+
 						}
 					}
 

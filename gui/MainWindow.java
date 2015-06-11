@@ -2,6 +2,8 @@ package com.benjamindebotte.labyrinth.gui;
 
 import java.awt.EventQueue;
 
+import javax.swing.JOptionPane;
+
 public class MainWindow {
 
 	/**
@@ -14,31 +16,23 @@ public class MainWindow {
 				try {
 
 					MainWindow window = new MainWindow();
-
 					window.frame.setVisible(true);
 
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					JOptionPane.showMessageDialog(null, e.getMessage(), e.getClass().toString(), JOptionPane.ERROR_MESSAGE);
 				}
 			}
 		});
 
 	}
 
-	private LabyFrame frame;
+	private final LabyFrame frame;
 
 	/**
 	 * Create the application.
 	 */
 	public MainWindow() {
-		try {
-			this.frame = new LabyFrame();
-
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		this.frame = new LabyFrame();
 	}
 
 }

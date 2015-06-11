@@ -43,7 +43,7 @@ public class Game implements Observer {
 			} else if (e instanceof InputEvent) {
 				if (e instanceof KeyboardEvent) {
 					Game.this.moveHandler
-							.processKeyboardEvent((KeyboardEvent) e);
+					.processKeyboardEvent((KeyboardEvent) e);
 				}
 			} else {
 			}

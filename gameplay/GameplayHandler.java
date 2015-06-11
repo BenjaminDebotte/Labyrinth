@@ -41,9 +41,9 @@ public class GameplayHandler {
 			}
 			/* On supprime le monstre. */
 			this.currentGame
-			.getLabyrinth()
-			.getObjects()
-			.remove(((MonsterEncounterEvent) e).getEncounteredMonster());
+					.getLabyrinth()
+					.getObjects()
+					.remove(((MonsterEncounterEvent) e).getEncounteredMonster());
 
 		} else if (e instanceof BonusRetrievedEvent) {
 			this.processScoreEvent((BonusRetrievedEvent) e);

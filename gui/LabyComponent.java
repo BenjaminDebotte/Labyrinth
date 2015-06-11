@@ -4,6 +4,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 import java.util.Observable;
 
 import javax.swing.ImageIcon;
@@ -46,11 +47,13 @@ public class LabyComponent extends JComponent {
 	private ImageIcon iconFinish;
 	private ImageIcon iconFloor;
 	private ImageIcon iconItem;
+	private ImageIcon iconMalus;
 	private ImageIcon iconMonster;
-	/* Icônes pré-chargés */
 	private ImageIcon iconPlayer;
-	private boolean iconsRescaled;
 	private ImageIcon iconWall;
+	private ArrayList<ImageIcon> icons;
+	private boolean iconsRescaled;
+
 
 	private LabyKeyListener listener;
 
@@ -81,7 +84,7 @@ public class LabyComponent extends JComponent {
 		this.setLayout(new GridLayout(laby.getMap().getLength(), laby.getMap()
 				.getWidth()));
 		this.GUI = new JLabel[laby.getMap().getLength()][laby.getMap()
-		                                                 .getWidth()];
+				.getWidth()];
 		for (int i = 0; i < laby.getMap().getLength(); i++) {
 			for (int j = 0; j < laby.getMap().getWidth(); j++) {
 				this.GUI[i][j] = new JLabel();
@@ -98,12 +101,20 @@ public class LabyComponent extends JComponent {
 
 	private void loadIcons() {
 		/* On charge les icônes */
+		
+		icons = new ArrayList<ImageIcon>();
 		this.iconPlayer = new ImageIcon("./img/Player.png");
 		this.iconWall = new ImageIcon("./img/Wall.png");
 		this.iconItem = new ImageIcon("./img/Item.jpg");
 		this.iconFloor = new ImageIcon("./img/Floor.png");
 		this.iconMonster = new ImageIcon("./img/Monster.png");
 		this.iconFinish = new ImageIcon("./img/FinishLine.png");
+		this.iconMalus = new ImageIcon("./img/Malus.png");
+		
+		icons.add(iconItem); icons.add(iconMonster); icons.add(iconPlayer); icons.add(iconMalus); icons.add(iconFloor);
+		icons.add(iconFinish); icons.add(iconWall);
+		
+		
 		this.iconsRescaled = false;
 	}
 
@@ -139,24 +150,13 @@ public class LabyComponent extends JComponent {
 		if (!this.iconsRescaled) {
 			if (this.GUI[0][0].getWidth() != 0
 					&& this.GUI[0][0].getHeight() != 0) {
-				this.iconPlayer.setImage(this.iconPlayer.getImage()
-						.getScaledInstance(this.GUI[0][0].getWidth(),
-								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
-				this.iconWall.setImage(this.iconWall.getImage()
-						.getScaledInstance(this.GUI[0][0].getWidth(),
-								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
-				this.iconItem.setImage(this.iconItem.getImage()
-						.getScaledInstance(this.GUI[0][0].getWidth(),
-								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
-				this.iconFloor.setImage(this.iconFloor.getImage()
-						.getScaledInstance(this.GUI[0][0].getWidth(),
-								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
-				this.iconMonster.setImage(this.iconMonster.getImage()
-						.getScaledInstance(this.GUI[0][0].getWidth(),
-								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
-				this.iconFinish.setImage(this.iconFinish.getImage()
-						.getScaledInstance(this.GUI[0][0].getWidth(),
-								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
+				
+				
+				for(ImageIcon icon : this.icons)
+					icon.setImage(icon.getImage()
+							.getScaledInstance(this.GUI[0][0].getWidth(),
+									this.GUI[0][0].getWidth(), Image.SCALE_FAST));
+				
 				this.iconsRescaled = true;
 			}
 		}

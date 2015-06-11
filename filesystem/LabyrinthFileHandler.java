@@ -23,7 +23,7 @@ public class LabyrinthFileHandler {
 	}
 
 	public Labyrinth load() throws FileNotFoundException, IOException,
-	ClassNotFoundException {
+			ClassNotFoundException {
 		Labyrinth laby = null;
 
 		File f_laby = new File(this.path);

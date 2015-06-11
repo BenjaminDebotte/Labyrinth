@@ -7,9 +7,11 @@ import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
+import com.benjamindebotte.exception.LabyException;
 import com.benjamindebotte.labyrinth.entities.Bonus;
 import com.benjamindebotte.labyrinth.entities.FinishLine;
 import com.benjamindebotte.labyrinth.entities.LabyObject;
+import com.benjamindebotte.labyrinth.entities.Malus;
 import com.benjamindebotte.labyrinth.entities.Monster;
 import com.benjamindebotte.labyrinth.entities.Player;
 import com.benjamindebotte.labyrinth.entities.Wall;
@@ -40,15 +42,16 @@ public class Labyrinth implements Serializable {
 	 *
 	 */
 	private static final long serialVersionUID = 7093066492876133264L;
-	private final int BONUS_SCORE_MAX = 1000;
-	private final int BONUS_SCORE_MIN = 100;
+	private final int BONUS_SCORE = 1000;
+	private final int MALUS_SCORE = -200;
 
 	private final Map map;
 	private final ArrayList<LabyObject> objects;
 
 	private Player player;
 
-	public Labyrinth(int length, int width) throws Exception {
+	public Labyrinth(int length, int width) throws LabyException,
+	IllegalArgumentException {
 		this.map = new Map(length, width);
 		this.objects = new ArrayList<LabyObject>();
 		this.generateLabyrinth();
@@ -90,26 +93,32 @@ public class Labyrinth implements Serializable {
 
 	private void generateItems() {
 		int NB_ITEMS = this.map.getLength() / 3 + this.map.getWidth() / 3;
+		int NB_MALUS = this.map.getLength() / 5 + this.map.getWidth() / 5;
 
-		while (NB_ITEMS > 0) {
+		while (NB_ITEMS > 0 || NB_MALUS > 0) {
 			Case c = this.map.getCase(
-					(int) (Math.random() * this.map.getLength()),
-					(int) (Math.random() * this.map.getWidth()));
+					(int) (Math.random() * this.map.getLength() - 2),
+					(int) (Math.random() * this.map.getWidth() - 2 ));
 			if (c == null) {
 				continue;
 			}
 			if (c.getObj() != null) {
 				continue;
 			}
-
-			Bonus b = new Bonus((int) (Math.random() * this.BONUS_SCORE_MAX)
-					+ this.BONUS_SCORE_MIN);
-			this.assignObject(c, b);
-			NB_ITEMS--;
+			
+			if((int)(Math.random()*3) == 1) {
+				Malus b = new Malus(this.MALUS_SCORE);
+				this.assignObject(c, b);
+				NB_MALUS--;
+			} else {
+				Bonus b = new Bonus(this.BONUS_SCORE);
+				this.assignObject(c, b);
+				NB_ITEMS--;
+			}
 		}
 	}
 
-	private void generateLabyrinth() throws Exception {
+	private void generateLabyrinth() throws LabyException {
 		this.generateLevel();
 		this.generateMonsters();
 		this.generateItems();
@@ -117,7 +126,7 @@ public class Labyrinth implements Serializable {
 		this.addFinishLine();
 	}
 
-	private void generateLevel() throws Exception {
+	private void generateLevel() throws LabyException {
 		this.generateLowLevel();
 		this.generateIslets();
 		this.generateWays();
@@ -173,8 +182,8 @@ public class Labyrinth implements Serializable {
 					Wall w = new Wall();
 					this.assignObject(cases[i][j], w);
 				} else {
-					this.objects.remove(cases[i][j].getObj()); // Suppression
-					// des Islets
+					/* Suppression des Islets */
+					this.objects.remove(cases[i][j].getObj());
 					cases[i][j].setObj(null);
 				}
 
@@ -182,7 +191,7 @@ public class Labyrinth implements Serializable {
 		}
 	}
 
-	private void generateWays() throws Exception {
+	private void generateWays() throws LabyException {
 
 		int MAX_VALUE = 1;
 
@@ -210,8 +219,7 @@ public class Labyrinth implements Serializable {
 		}
 
 		if (islet == null)
-			throw new Exception("Impossible de trouver un islet de valeur "
-					+ randomValue);
+			throw new LabyException("Impossible de trouver un îlot.");
 
 		/* Visite du Labyrinthe */
 		int totalCells = MAX_VALUE; /* On ne compte pas les bordures */
@@ -247,7 +255,8 @@ public class Labyrinth implements Serializable {
 
 				currentCell = previousCases.poll();
 				if (currentCell == null)
-					throw new Exception("Plus de cellule. :(");
+					throw new LabyException(
+							"La génération des chemins a rencontré une erreur.");
 
 				continue; /* On repart avec une nouvelle cellule ! */
 			}

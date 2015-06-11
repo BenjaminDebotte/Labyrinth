@@ -21,12 +21,14 @@ public class Map implements Serializable {
 	private final int length;
 	private final int width;
 
-	public Map(int length, int width) throws Exception {
+	public Map(int length, int width) throws IllegalArgumentException {
 
 		if (length <= 0 || width <= 0)
-			throw new Exception();
+			throw new IllegalArgumentException(
+					"La largeur ou longueur ne peut être nulle.");
 		if (length % 2 == 0 || width % 2 == 0)
-			throw new Exception();
+			throw new IllegalArgumentException(
+					"La largeur ou longueur ne peut être paire.");
 
 		this.length = length;
 		this.width = width;
