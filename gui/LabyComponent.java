@@ -1,22 +1,14 @@
 package com.benjamindebotte.labyrinth.gui;
 
-import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.File;
-import java.io.FilePermission;
-import java.io.IOException;
 import java.util.Observable;
-import java.util.Timer;
-import java.util.TimerTask;
 
-import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.plaf.metal.MetalIconFactory.FolderIcon16;
 
 import com.benjamindebotte.labyrinth.containers.Labyrinth;
 import com.benjamindebotte.labyrinth.entities.Bonus;
@@ -31,164 +23,160 @@ import com.benjamindebotte.labyrinth.gameplay.Game;
 
 public class LabyComponent extends JComponent {
 
-private static final long serialVersionUID = 2337634060590226403L;
-	
-	private Timer refresh;
-	private Game game;
+	private class LabyKeyListener extends Observable implements KeyListener {
+		@Override
+		public void keyPressed(KeyEvent evt) {
+			this.setChanged();
+			this.notifyObservers(new KeyboardEvent(evt.getKeyCode()));
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+		}
+
+		@Override
+		public void keyTyped(KeyEvent e) {
+		}
+	}
+
+	private static final long serialVersionUID = 2337634060590226403L;
+	private final Game game;
 	private JLabel[][] GUI;
-	private boolean iconsRescaled;
-	
-	private LabyKeyListener listener;
-	private int FRAME_RATE; //ms
-	
+
+	private ImageIcon iconFinish;
+	private ImageIcon iconFloor;
+	private ImageIcon iconItem;
+	private ImageIcon iconMonster;
 	/* Icônes pré-chargés */
 	private ImageIcon iconPlayer;
-	private ImageIcon iconMonster;
+	private boolean iconsRescaled;
 	private ImageIcon iconWall;
-	private ImageIcon iconItem;
-	private ImageIcon iconFloor;
-	private ImageIcon iconFinish;
-	
-	
-	public LabyComponent(Game gameHandler) {
-		if(gameHandler == null)
-			throw new NullPointerException();
-		
-		this.game = gameHandler;
-		
-		initKeyListener();	
-		
-		loadIcons();
 
-		initGUI();
-		
+	private LabyKeyListener listener;
+
+	public LabyComponent(Game gameHandler) {
+		if (gameHandler == null)
+			throw new NullPointerException();
+
+		this.game = gameHandler;
+
+		this.initKeyListener();
+
+		this.loadIcons();
+
+		this.initGUI();
 
 		this.setFocusable(true);
 
-		
+	}
 
-		
+	public Game getGame() {
+		return this.game;
 	}
-	
-	private void loadIcons(){
-		/* On charge les icônes */
-		iconPlayer = new ImageIcon("./img/Player.png");
-		iconWall = new ImageIcon("./img/Wall.png");
-		iconItem = new ImageIcon("./img/Item.jpg");
-		iconFloor = new ImageIcon("./img/Floor.png");
-		iconMonster = new ImageIcon("./img/Monster.png");
-		iconFinish = new ImageIcon("./img/FinishLine.png");
-		iconsRescaled = false;
-	}
-	
+
 	private void initGUI() {
-		if(game.getLabyrinth() == null)
+		if (this.game.getLabyrinth() == null)
 			throw new NullPointerException();
-		Labyrinth laby = game.getLabyrinth();
-		this.setLayout(new GridLayout(laby.getMap().getLength(), laby.getMap().getWidth()));
-		GUI = new JLabel[laby.getMap().getLength()][laby.getMap().getWidth()];
-		for(int i = 0; i < laby.getMap().getLength(); i++) 
-			for(int j = 0; j < laby.getMap().getWidth(); j++){
-				GUI[i][j] = new JLabel();
-				this.add(GUI[i][j]);
-			}
-	}
-	
-	private void initKeyListener() {
-		listener = new LabyKeyListener();
-		this.addKeyListener(listener);
-		listener.addObserver(game);
-	}
-	
-	
-	public void refreshGameStatus() {
-		
-	}
-	
-	
-	public void refreshGUI() {
-		
-		this.requestFocusInWindow();
-
-		if(!iconsRescaled){
-			if(GUI[0][0].getWidth() != 0 && GUI[0][0].getHeight() != 0) {
-				iconPlayer.setImage(iconPlayer.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
-				iconWall.setImage(iconWall.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
-				iconItem.setImage(iconItem.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
-				iconFloor.setImage(iconFloor.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
-				iconMonster.setImage(iconMonster.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
-				iconFinish.setImage(iconFinish.getImage().getScaledInstance(GUI[0][0].getWidth(), GUI[0][0].getWidth(), Image.SCALE_FAST));
-				iconsRescaled = true;
+		Labyrinth laby = this.game.getLabyrinth();
+		this.setLayout(new GridLayout(laby.getMap().getLength(), laby.getMap()
+				.getWidth()));
+		this.GUI = new JLabel[laby.getMap().getLength()][laby.getMap()
+		                                                 .getWidth()];
+		for (int i = 0; i < laby.getMap().getLength(); i++) {
+			for (int j = 0; j < laby.getMap().getWidth(); j++) {
+				this.GUI[i][j] = new JLabel();
+				this.add(this.GUI[i][j]);
 			}
 		}
-		
-		
-		Labyrinth laby = game.getLabyrinth();
+	}
 
-		for(int i = 0; i < laby.getMap().getLength(); i++) 
-			for(int j = 0; j < laby.getMap().getWidth(); j++) 
-				objectToGraphics(GUI[i][j], laby.getMap().getCase(i, j).getObj());
-			
-		repaint();
-		
+	private void initKeyListener() {
+		this.listener = new LabyKeyListener();
+		this.addKeyListener(this.listener);
+		this.listener.addObserver(this.game);
 	}
-	
-	@Override
-	public void repaint() {
-		super.repaint();
+
+	private void loadIcons() {
+		/* On charge les icônes */
+		this.iconPlayer = new ImageIcon("./img/Player.png");
+		this.iconWall = new ImageIcon("./img/Wall.png");
+		this.iconItem = new ImageIcon("./img/Item.jpg");
+		this.iconFloor = new ImageIcon("./img/Floor.png");
+		this.iconMonster = new ImageIcon("./img/Monster.png");
+		this.iconFinish = new ImageIcon("./img/FinishLine.png");
+		this.iconsRescaled = false;
 	}
-	
-	
-	public Game getGame() {
-		return game;
-	}
-	
-	
 
 	public void objectToGraphics(JLabel graphObject, LabyObject obj) {
 		graphObject.setOpaque(true);
 		ImageIcon icon = null;
-		if(obj instanceof Wall){
-			icon = iconWall;
+		if (obj instanceof Wall) {
+			icon = this.iconWall;
 		} else if (obj == null) {
-			icon = (iconFloor);
-		} else if(obj instanceof Entity) {
-			if(obj instanceof Monster)
-				icon = (iconMonster);
-			else if(obj instanceof Player)
-				icon = (iconPlayer);
-		} else if(obj instanceof Bonus) {
-			icon = (iconItem);
-		} else if(obj instanceof FinishLine) {
-			icon = iconFinish;
+			icon = (this.iconFloor);
+		} else if (obj instanceof Entity) {
+			if (obj instanceof Monster) {
+				icon = (this.iconMonster);
+			} else if (obj instanceof Player) {
+				icon = (this.iconPlayer);
+			}
+		} else if (obj instanceof Bonus) {
+			icon = (this.iconItem);
+		} else if (obj instanceof FinishLine) {
+			icon = this.iconFinish;
 		}
-		if(icon == null)
+		if (icon == null)
 			return;
-		
+
 		graphObject.setIcon(icon);
-		
+
 	}
 
+	public void refreshGUI() {
 
+		this.requestFocusInWindow();
 
-	private class LabyKeyListener extends Observable implements KeyListener {
-		@Override
-		public void keyTyped(KeyEvent e) {
+		if (!this.iconsRescaled) {
+			if (this.GUI[0][0].getWidth() != 0
+					&& this.GUI[0][0].getHeight() != 0) {
+				this.iconPlayer.setImage(this.iconPlayer.getImage()
+						.getScaledInstance(this.GUI[0][0].getWidth(),
+								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
+				this.iconWall.setImage(this.iconWall.getImage()
+						.getScaledInstance(this.GUI[0][0].getWidth(),
+								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
+				this.iconItem.setImage(this.iconItem.getImage()
+						.getScaledInstance(this.GUI[0][0].getWidth(),
+								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
+				this.iconFloor.setImage(this.iconFloor.getImage()
+						.getScaledInstance(this.GUI[0][0].getWidth(),
+								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
+				this.iconMonster.setImage(this.iconMonster.getImage()
+						.getScaledInstance(this.GUI[0][0].getWidth(),
+								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
+				this.iconFinish.setImage(this.iconFinish.getImage()
+						.getScaledInstance(this.GUI[0][0].getWidth(),
+								this.GUI[0][0].getWidth(), Image.SCALE_FAST));
+				this.iconsRescaled = true;
+			}
 		}
-	
-	
-	
-		@Override
-		public void keyPressed(KeyEvent evt) {	
-			this.setChanged();
-			notifyObservers(new KeyboardEvent(evt.getKeyCode()));
+
+		Labyrinth laby = this.game.getLabyrinth();
+
+		for (int i = 0; i < laby.getMap().getLength(); i++) {
+			for (int j = 0; j < laby.getMap().getWidth(); j++) {
+				this.objectToGraphics(this.GUI[i][j],
+						laby.getMap().getCase(i, j).getObj());
+			}
 		}
-	
-	
-	
-		@Override
-		public void keyReleased(KeyEvent e) {
-		}
+
+		this.repaint();
+
+	}
+
+	@Override
+	public void repaint() {
+		super.repaint();
 	}
 
 }

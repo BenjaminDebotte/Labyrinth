@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.benjamindebotte.labyrinth.events;
 
@@ -9,25 +9,24 @@ package com.benjamindebotte.labyrinth.events;
  */
 public class Event {
 	boolean accepted;
-	
+
 	/**
-	 * 
+	 *
 	 */
 	public Event() {
-		accepted = false;
+		this.accepted = false;
 	}
-	
-	
+
 	public void accept() {
-		accepted = true;
+		this.accepted = true;
 	}
-	
+
 	public void ignore() {
-		accepted = false;
+		this.accepted = false;
 	}
-	
+
 	public boolean isAccepted() {
-		return accepted;
+		return this.accepted;
 	}
 
 }

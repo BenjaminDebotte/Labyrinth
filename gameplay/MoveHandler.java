@@ -1,12 +1,15 @@
 /**
- * 
+ *
  */
 package com.benjamindebotte.labyrinth.gameplay;
 
 import java.awt.event.KeyEvent;
 
-import com.benjamindebotte.labyrinth.containers.*;
-import com.benjamindebotte.labyrinth.entities.*;
+import com.benjamindebotte.labyrinth.containers.Case;
+import com.benjamindebotte.labyrinth.containers.Labyrinth;
+import com.benjamindebotte.labyrinth.entities.LabyObject;
+import com.benjamindebotte.labyrinth.entities.Monster;
+import com.benjamindebotte.labyrinth.entities.Player;
 import com.benjamindebotte.labyrinth.events.input.KeyboardEvent;
 
 /**
@@ -15,66 +18,65 @@ import com.benjamindebotte.labyrinth.events.input.KeyboardEvent;
  */
 public class MoveHandler {
 
-	private Labyrinth laby;
+	private final Labyrinth laby;
+
 	/**
-	 * 
+	 *
 	 */
 	public MoveHandler(Labyrinth lab) {
 
-		laby = lab;
+		this.laby = lab;
 	}
-	
+
 	public void moveAll() {
-		for(LabyObject obj : this.laby.getObjects()){
-			if(!(obj instanceof Monster))
+		for (LabyObject obj : this.laby.getObjects()) {
+			if (!(obj instanceof Monster)) {
 				continue;
-			
-			Monster m = (Monster)obj;
+			}
+
+			Monster m = (Monster) obj;
 			Case c;
-			switch((int)(Math.random()*4 + 1)) {
+			switch ((int) (Math.random() * 4 + 1)) {
 			case 1:
-				c = laby.getMap().getSouth(m.getCase());
+				c = this.laby.getMap().getSouth(m.getCase());
 				break;
 			case 2:
-				c = laby.getMap().getWest(m.getCase());
+				c = this.laby.getMap().getWest(m.getCase());
 				break;
 			case 3:
-				c = laby.getMap().getNorth(m.getCase());
+				c = this.laby.getMap().getNorth(m.getCase());
 				break;
-			case 4:
 			default:
-				c = laby.getMap().getEast(m.getCase());
+				c = this.laby.getMap().getEast(m.getCase());
 				break;
 			}
-			
-			if(c != null){
+
+			if (c != null) {
 				m.move(c);
 			}
 		}
 	}
-	
+
 	public void processKeyboardEvent(KeyboardEvent evt) {
-		Player player = laby.getPlayer();
-		switch(evt.getKeyCode()){
+		Player player = this.laby.getPlayer();
+		switch (evt.getKeyCode()) {
 		case KeyEvent.VK_LEFT:
-			player.move(laby.getMap().getWest(player.getCase()));
-		     break;
+			player.move(this.laby.getMap().getWest(player.getCase()));
+			break;
 		case KeyEvent.VK_RIGHT:
-			player.move(laby.getMap().getEast(player.getCase()));
+			player.move(this.laby.getMap().getEast(player.getCase()));
 			break;
 		case KeyEvent.VK_UP:
-			player.move(laby.getMap().getNorth(player.getCase()));
+			player.move(this.laby.getMap().getNorth(player.getCase()));
 			break;
 		case KeyEvent.VK_DOWN:
-			player.move(laby.getMap().getSouth(player.getCase()));
+			player.move(this.laby.getMap().getSouth(player.getCase()));
 			break;
 		default:
-			return;				
-	    }
-		
+			return;
+		}
+
 		evt.accept();
-		
+
 	}
 }
-
-

@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.benjamindebotte.labyrinth.events.game;
 
@@ -15,15 +15,16 @@ public class GameEvent extends Event {
 	private LabyObject sender;
 
 	/**
-	 * 
+	 *
 	 */
 	public GameEvent(LabyObject sender) {
 		this.sender = sender;
 	}
-	
+
 	public LabyObject getSender() {
-		return sender;
+		return this.sender;
 	}
+
 	public void setSender(LabyObject sender) {
 		this.sender = sender;
 	}

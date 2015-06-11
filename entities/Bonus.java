@@ -1,5 +1,5 @@
 /**
- * 
+ *
  */
 package com.benjamindebotte.labyrinth.entities;
 
@@ -10,11 +10,11 @@ import com.benjamindebotte.labyrinth.containers.Case;
  *
  */
 public class Bonus extends LabyObject {
-	private int nbPoints;
-	
-	public int getNbPoints() {
-		return nbPoints;
-	}
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = -2717684632262739793L;
+	private final int nbPoints;
 
 	/**
 	 * @param X
@@ -26,10 +26,14 @@ public class Bonus extends LabyObject {
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	public Bonus(int nbPoints) {
 		this.nbPoints = nbPoints;
+	}
+
+	public int getNbPoints() {
+		return this.nbPoints;
 	}
 
 }

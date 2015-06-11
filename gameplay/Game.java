@@ -1,6 +1,7 @@
 package com.benjamindebotte.labyrinth.gameplay;
+
 /**
- * 
+ *
  */
 
 import java.util.LinkedList;
@@ -24,179 +25,171 @@ import com.benjamindebotte.labyrinth.events.input.KeyboardEvent;
  */
 public class Game implements Observer {
 
-	private Timer gameTimer, monstersTimer;
-	
-	private GameplayHandler gameplayHandler;
-	private MoveHandler moveHandler;
-	private LinkedList<Event> events;
-	private Labyrinth laby;
-	
-	
-	private final static int MONSTER_MOVE_RATE = 500; //ms
-	private final static int GAME_RATE = 100;
-	
 	public enum GAME_STATE {
-		VICTORY,
-		LOST,
-		NOT_FINISHED
+		LOST, NOT_FINISHED, VICTORY
 	}
-	
+
+	private class GameTask extends TimerTask {
+
+		private void processEvent(Event e) {
+			if (e instanceof GameEvent) {
+				if (e instanceof GameOverEvent) {
+					Game.this.setEndGameAsLost();
+				} else if (e instanceof GameWinEvent) {
+					Game.this.setEndGameAsWon();
+				} else {
+					Game.this.gameplayHandler.processGameEvent((GameEvent) e);
+				}
+			} else if (e instanceof InputEvent) {
+				if (e instanceof KeyboardEvent) {
+					Game.this.moveHandler
+							.processKeyboardEvent((KeyboardEvent) e);
+				}
+			} else {
+			}
+		}
+
+		private void processEvents() {
+			while (!Game.this.events.isEmpty()) {
+				this.processEvent(Game.this.events.removeFirst());
+			}
+		}
+
+		@Override
+		public void run() {
+			this.processEvents();
+		}
+	}
+
+	private class MonstersTask extends TimerTask {
+		@Override
+		public void run() {
+			Game.this.moveHandler.moveAll();
+		}
+	}
+
+	private final static int GAME_RATE = 100;
+	private final static int MONSTER_MOVE_RATE = 500; // ms
+
+	private final LinkedList<Event> events;
+	private final GameplayHandler gameplayHandler;
+
 	private GAME_STATE gameState;
-	
-	
+
+	private Timer gameTimer, monstersTimer;
+
+	private final Labyrinth laby;
+
+	private final MoveHandler moveHandler;
+
+	/**
+	 * @throws Exception
+	 *
+	 */
+	public Game(int length, int width) throws Exception {
+		this.laby = new Labyrinth(length, width);
+		this.gameplayHandler = new GameplayHandler(this);
+		this.moveHandler = new MoveHandler(this.laby);
+		this.events = new LinkedList<Event>();
+		this.gameState = GAME_STATE.NOT_FINISHED;
+
+		for (LabyObject obj : this.laby.getObjects()) {
+			obj.addObserver(this);
+		}
+
+		/* ********* Timers ******** */
+		this.gameTimer = new Timer(true);
+		this.monstersTimer = new Timer(true);
+
+		this.gameTimer.scheduleAtFixedRate(new GameTask(), 0, GAME_RATE);
+		this.monstersTimer.scheduleAtFixedRate(new MonstersTask(), 0,
+				MONSTER_MOVE_RATE);
+
+		/* * * * * * */
+
+	}
+
+	public Game(Labyrinth laby) {
+		this.laby = laby;
+		this.gameplayHandler = new GameplayHandler(this);
+		this.moveHandler = new MoveHandler(laby);
+		this.events = new LinkedList<Event>();
+		this.gameState = GAME_STATE.NOT_FINISHED;
+
+		for (LabyObject obj : laby.getObjects()) {
+			obj.addObserver(this);
+		}
+
+		/* ********* Timers ******** */
+
+		this.startTimers();
+
+		/* * * * * * */
+	}
+
+	public void addEvent(Event e) {
+		this.events.add(e);
+
+	}
+
 	public int getGameRate() {
 		return GAME_RATE;
 	}
 
-	public int getScore() {
-		return gameplayHandler.getScore();
+	public GAME_STATE getGameState() {
+		return this.gameState;
 	}
 
-	/**
-	 * @throws Exception 
-	 * 
-	 */
-	public Game(int length, int width) throws Exception {
-		laby = new Labyrinth(length, width);
-		gameplayHandler =  new GameplayHandler(this);
-		moveHandler = new MoveHandler(laby);
-		events = new LinkedList<Event>();
-		gameState = GAME_STATE.NOT_FINISHED;
-		
-		for(LabyObject obj : laby.getObjects())
-			obj.addObserver(this);
-		
-		
-		/* ********* Timers *********/
-		gameTimer = new Timer(true);
-		monstersTimer = new Timer(true);
-		
-		gameTimer.scheduleAtFixedRate(new GameTask(), 0, GAME_RATE);
-		monstersTimer.scheduleAtFixedRate(new MonstersTask(), 0, MONSTER_MOVE_RATE);
-
-		/*	*	*	*	*	*	*/
-		
-	}
-	
-	public Game(Labyrinth laby){
-		this.laby = laby;
-		gameplayHandler =  new GameplayHandler(this);
-		moveHandler = new MoveHandler(laby);
-		events = new LinkedList<Event>();
-		gameState = GAME_STATE.NOT_FINISHED;
-		
-		for(LabyObject obj : laby.getObjects())
-			obj.addObserver(this);
-		
-		
-		/* ********* Timers *********/
-		
-		startTimers();
-
-		/*	*	*	*	*	*	*/
-	}
-	
 	public Labyrinth getLabyrinth() {
-		return laby;
+		return this.laby;
 	}
-	
 
-	public void addEvent(Event e) {
-		events.add(e);
-
+	public int getLives() {
+		return this.gameplayHandler.getLives();
 	}
-	
+
+	public int getScore() {
+		return this.gameplayHandler.getScore();
+	}
+
+	public boolean isGameEnded() {
+		return this.gameState != GAME_STATE.NOT_FINISHED;
+	}
+
+	public void pauseTimers() {
+		this.gameTimer.cancel();
+		this.monstersTimer.cancel();
+	}
+
+	private void setEndGameAsLost() {
+		this.gameState = GAME_STATE.LOST;
+		this.gameTimer.cancel();
+		this.monstersTimer.cancel();
+	}
+
+	private void setEndGameAsWon() {
+		this.gameState = GAME_STATE.VICTORY;
+		this.gameTimer.cancel();
+		this.monstersTimer.cancel();
+	}
+
+	public void setGameState(GAME_STATE gameState) {
+		this.gameState = gameState;
+	}
+
+	public void startTimers() {
+		this.gameTimer = new Timer(true);
+		this.monstersTimer = new Timer(true);
+		this.gameTimer.scheduleAtFixedRate(new GameTask(), 0, GAME_RATE);
+		this.monstersTimer.scheduleAtFixedRate(new MonstersTask(), 0,
+				MONSTER_MOVE_RATE);
+	}
+
 	@Override
 	public void update(Observable o, Object arg) {
-		if(!(arg instanceof Event)) 
+		if (!(arg instanceof Event))
 			return;
-		addEvent((Event)arg);
+		this.addEvent((Event) arg);
 	}
-	
-	
-	public void pauseTimers() {
-		gameTimer.cancel();
-		monstersTimer.cancel();
-	}
-	
-	public void startTimers() {
-		gameTimer = new Timer(true);
-		monstersTimer = new Timer(true);
-		gameTimer.scheduleAtFixedRate(new GameTask(), 0, GAME_RATE);
-		monstersTimer.scheduleAtFixedRate(new MonstersTask(), 0, MONSTER_MOVE_RATE);
-	}
-	
-	
-	public boolean isGameEnded() {
-		return gameState != GAME_STATE.NOT_FINISHED;
-	}
-	
-	public int getLives() {
-		return gameplayHandler.getLives();
-	}
-
-
-private void setEndGameAsWon() {	
-	gameState = GAME_STATE.VICTORY;
-	gameTimer.cancel();
-	monstersTimer.cancel();
-}
-	
-private void setEndGameAsLost() {	
-	gameState = GAME_STATE.LOST;
-	gameTimer.cancel();
-	monstersTimer.cancel();
-}
-
-	public GAME_STATE getGameState() {
-	return gameState;
-}
-
-public void setGameState(GAME_STATE gameState) {
-	this.gameState = gameState;
-}
-
-
-	private class MonstersTask extends TimerTask {
-		public void run() {
-			moveHandler.moveAll();
-		}
-	}
-	
-	private class GameTask extends TimerTask {
-		
-		private void processEvent(Event e) {
-			if(e instanceof GameEvent) {
-				 if(e instanceof GameOverEvent) {
-						System.out.println("Game over");
-						setEndGameAsLost();
-					} else if(e instanceof GameWinEvent) {
-						System.out.println("Game WIN");
-						setEndGameAsWon();
-					} else {
-							gameplayHandler.processGameEvent((GameEvent)e);
-					}
-			} else if(e instanceof InputEvent) {
-				if(e instanceof KeyboardEvent)
-					moveHandler.processKeyboardEvent((KeyboardEvent) e);
-			} else {
-			}
-		}
-		
-		private void processEvents() {
-			while(!events.isEmpty()) {
-				processEvent(events.removeFirst());
-			}
-		}
-
-		public void run() {
-			processEvents();
-		}
-	}
-	
-	
-
-
-	
 
 }

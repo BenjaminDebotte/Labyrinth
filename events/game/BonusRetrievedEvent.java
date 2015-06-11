@@ -4,7 +4,6 @@ import com.benjamindebotte.labyrinth.entities.Bonus;
 
 public class BonusRetrievedEvent extends GameEvent {
 
-	
 	public BonusRetrievedEvent(Bonus sender) {
 		super(sender);
 	}
