@@ -16,12 +16,19 @@ import com.benjamindebotte.labyrinth.entities.Bonus;
 import com.benjamindebotte.labyrinth.entities.Entity;
 import com.benjamindebotte.labyrinth.entities.FinishLine;
 import com.benjamindebotte.labyrinth.entities.LabyObject;
+import com.benjamindebotte.labyrinth.entities.Malus;
 import com.benjamindebotte.labyrinth.entities.Monster;
 import com.benjamindebotte.labyrinth.entities.Player;
 import com.benjamindebotte.labyrinth.entities.Wall;
 import com.benjamindebotte.labyrinth.events.input.KeyboardEvent;
 import com.benjamindebotte.labyrinth.gameplay.Game;
 
+/**
+ * @author benjamindebotte
+ * LabyComponent représente l'objet graphique représentant le Labyrinthe <=> objet Game en cours.
+ * Elle génère les événements d'entrée (Souris, Clavier) puis s'occupe d'afficher à l'écran les
+ * données du labyrinthe via une association LabyObject <=> Objet graphique via des JLabels et des ImageIcon.
+ */
 public class LabyComponent extends JComponent {
 
 	private class LabyKeyListener extends Observable implements KeyListener {
@@ -81,10 +88,8 @@ public class LabyComponent extends JComponent {
 		if (this.game.getLabyrinth() == null)
 			throw new NullPointerException();
 		Labyrinth laby = this.game.getLabyrinth();
-		this.setLayout(new GridLayout(laby.getMap().getLength(), laby.getMap()
-				.getWidth()));
-		this.GUI = new JLabel[laby.getMap().getLength()][laby.getMap()
-				.getWidth()];
+		this.setLayout(new GridLayout(laby.getMap().getLength(), laby.getMap().getWidth()));
+		this.GUI = new JLabel[laby.getMap().getLength()][laby.getMap().getWidth()];
 		for (int i = 0; i < laby.getMap().getLength(); i++) {
 			for (int j = 0; j < laby.getMap().getWidth(); j++) {
 				this.GUI[i][j] = new JLabel();
@@ -111,8 +116,13 @@ public class LabyComponent extends JComponent {
 		this.iconFinish = new ImageIcon("./img/FinishLine.png");
 		this.iconMalus = new ImageIcon("./img/Malus.png");
 		
-		icons.add(iconItem); icons.add(iconMonster); icons.add(iconPlayer); icons.add(iconMalus); icons.add(iconFloor);
-		icons.add(iconFinish); icons.add(iconWall);
+		icons.add(iconWall); 
+		icons.add(iconItem); 
+		icons.add(iconMonster); 
+		icons.add(iconPlayer); 
+		icons.add(iconMalus); 
+		icons.add(iconFloor);
+		icons.add(iconFinish); 
 		
 		
 		this.iconsRescaled = false;
@@ -135,6 +145,8 @@ public class LabyComponent extends JComponent {
 			icon = (this.iconItem);
 		} else if (obj instanceof FinishLine) {
 			icon = this.iconFinish;
+		} else if(obj instanceof Malus) {
+			icon = this.iconMalus;
 		}
 		if (icon == null)
 			return;
@@ -148,15 +160,12 @@ public class LabyComponent extends JComponent {
 		this.requestFocusInWindow();
 
 		if (!this.iconsRescaled) {
-			if (this.GUI[0][0].getWidth() != 0
-					&& this.GUI[0][0].getHeight() != 0) {
+			if (this.GUI[1][0].getWidth() != 0
+					&& this.GUI[1][0].getHeight() != 0) {
 				
-				
-				for(ImageIcon icon : this.icons)
-					icon.setImage(icon.getImage()
-							.getScaledInstance(this.GUI[0][0].getWidth(),
-									this.GUI[0][0].getWidth(), Image.SCALE_FAST));
-				
+				for(ImageIcon icon : this.icons){
+					icon.setImage(icon.getImage().getScaledInstance(this.GUI[1][0].getWidth(),this.GUI[1][0].getWidth(), Image.SCALE_FAST));
+				}
 				this.iconsRescaled = true;
 			}
 		}

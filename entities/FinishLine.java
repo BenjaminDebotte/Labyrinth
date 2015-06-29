@@ -2,6 +2,10 @@ package com.benjamindebotte.labyrinth.entities;
 
 import com.benjamindebotte.labyrinth.containers.Case;
 
+/**
+ * @author benjamindebotte
+ * Représente la ligne d'arrivée du Labyrinthe : seule condition de victoire lorsque le joueur l'atteint.
+ */
 public class FinishLine extends LabyObject {
 
 	/**

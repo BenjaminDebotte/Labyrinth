@@ -21,7 +21,10 @@ import com.benjamindebotte.labyrinth.events.input.KeyboardEvent;
 
 /**
  * @author benjamindebotte
- *
+ * Game est la classe de plus haut-niveau. C'est elle qui va gérer la boucle d'événement, la vitesse et la coordination des éléments 
+ * du Labyrinthe. Elle va pour cela observer l'ensemble des LabyObject du Labyrinthe puis, lorsqu'un événement apparait dans la boucle, va le
+ * traiter par un mécanisme de Timer. Cette réalisation permet d'avoir un jeu asynchrone sans pour autant instancier un thread.
+ * La fréquence de traitement des actions correspond à la valeur de GAME_RATE (en millisecondes).
  */
 public class Game implements Observer {
 
@@ -31,6 +34,9 @@ public class Game implements Observer {
 
 	private class GameTask extends TimerTask {
 
+		/** Méthode chargée de traiter et/ou de déléguer les événements présents dans la boucle.
+		 * @param e Événement produit dans la partie.
+		 */
 		private void processEvent(Event e) {
 			if (e instanceof GameEvent) {
 				if (e instanceof GameOverEvent) {
@@ -49,6 +55,9 @@ public class Game implements Observer {
 			}
 		}
 
+		/**
+		 * Traitement des événements exécutée tout les GAME_RATE millisecondes par un appel dans run().
+		 */
 		private void processEvents() {
 			while (!Game.this.events.isEmpty()) {
 				this.processEvent(Game.this.events.removeFirst());
@@ -68,8 +77,8 @@ public class Game implements Observer {
 		}
 	}
 
-	private final static int GAME_RATE = 100;
-	private final static int MONSTER_MOVE_RATE = 500; // ms
+	private final static int GAME_RATE = 100; //Fréquence (ms) de traitement des événements.
+	private final static int MONSTER_MOVE_RATE = 500; //Fréquence de déplacement des monstres.
 
 	private final LinkedList<Event> events;
 	private final GameplayHandler gameplayHandler;
@@ -84,7 +93,8 @@ public class Game implements Observer {
 
 	/**
 	 * @throws Exception
-	 *
+	 * Constructeur chargé d'instancier tout les éléments du jeu, ainsi que de démarrer l'ensemble
+	 * des timers.
 	 */
 	public Game(int length, int width) throws Exception {
 		this.laby = new Labyrinth(length, width);
@@ -109,6 +119,11 @@ public class Game implements Observer {
 
 	}
 
+	/**
+	 * @throws Exception
+	 * Constructeur chargé d'instancier tout les éléments du jeu à partir d'un objet Labyrinthe existant, ainsi que de démarrer l'ensemble
+	 * des timers.
+	 */
 	public Game(Labyrinth laby) {
 		this.laby = laby;
 		this.gameplayHandler = new GameplayHandler(this);

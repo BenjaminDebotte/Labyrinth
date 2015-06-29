@@ -9,9 +9,10 @@ import java.util.Observable;
 import com.benjamindebotte.labyrinth.containers.Case;
 import com.benjamindebotte.labyrinth.events.Event;
 
-/**
+/** La classe LabyObject représente la classe de base de tout les objets présents dans le Labyrinthe. Elle offre toutes les méthodes de base
+ * pour intéragir de manière basique avec celui-ci.
  * @author benjamindebotte
- *
+ * 
  */
 
 public class LabyObject extends Observable implements Serializable {
@@ -21,7 +22,6 @@ public class LabyObject extends Observable implements Serializable {
 	private static final long serialVersionUID = -4863281990231657549L;
 	private Case c;
 
-	/* Methods */
 
 	/**
 	 * Constructeur déléguant les coordonnées à une Case. Attention à s'assurer

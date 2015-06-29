@@ -6,7 +6,8 @@ package com.benjamindebotte.labyrinth.containers;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
+/** La classe Map regroupe l'ensemble des objets Case d'un Labyrinthe. Elle offre des méthodes pour résoudre
+ * des coordonnées en une Case.
  * @author benjamindebotte
  *
  */

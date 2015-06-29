@@ -7,7 +7,7 @@ import javax.swing.JOptionPane;
 public class MainWindow {
 
 	/**
-	 * Launch the application.
+	 * Point d'entrée de l'application.
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {

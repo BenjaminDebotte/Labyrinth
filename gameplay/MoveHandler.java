@@ -14,7 +14,7 @@ import com.benjamindebotte.labyrinth.events.input.KeyboardEvent;
 
 /**
  * @author benjamindebotte
- *
+ * Classe chargée de réaliser les mouvements des entités gérées par l'ordinateur.
  */
 public class MoveHandler {
 
@@ -29,7 +29,9 @@ public class MoveHandler {
 	}
 
 	public void moveAll() {
-		for (LabyObject obj : this.laby.getObjects()) {
+		LabyObject objs[] = new LabyObject[this.laby.getObjects().size()];
+		objs = this.laby.getObjects().toArray(objs);
+		for (LabyObject obj : objs) {
 			if (!(obj instanceof Monster)) {
 				continue;
 			}

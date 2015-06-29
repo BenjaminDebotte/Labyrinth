@@ -8,7 +8,8 @@ import com.benjamindebotte.labyrinth.events.game.MonsterEncounterEvent;
 
 /**
  * @author benjamindebotte
- *
+ * Représente un monstre déambulant dans le labyrinthe. Surcharge la méthode move pour lever un événement en cas de rencontre avec le joueur
+ * et pour éviter de ramasser les items.
  */
 public class Monster extends Entity {
 

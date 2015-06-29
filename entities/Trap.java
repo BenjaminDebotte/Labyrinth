@@ -7,7 +7,7 @@ import com.benjamindebotte.labyrinth.containers.Case;
 
 /**
  * @author benjamindebotte
- *
+ * Représente un piège du décor. (Non implémenté dans le projet).
  */
 public class Trap extends LabyObject {
 

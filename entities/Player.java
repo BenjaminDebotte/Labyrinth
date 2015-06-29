@@ -6,11 +6,12 @@ package com.benjamindebotte.labyrinth.entities;
 import com.benjamindebotte.labyrinth.containers.Case;
 import com.benjamindebotte.labyrinth.events.game.BonusRetrievedEvent;
 import com.benjamindebotte.labyrinth.events.game.GameWinEvent;
+import com.benjamindebotte.labyrinth.events.game.MalusRetrievedEvent;
 import com.benjamindebotte.labyrinth.events.game.MonsterEncounterEvent;
 
 /**
  * @author benjamindebotte
- *
+ * Représente le personnage contrôlé par le joueur.
  */
 public class Player extends Entity {
 
@@ -33,6 +34,9 @@ public class Player extends Entity {
 		if (newPosition.getObj() != null) {
 			if (newPosition.getObj() instanceof Bonus) {
 				this.postEvent(new BonusRetrievedEvent((Bonus) (newPosition
+						.getObj())));
+			} else if (newPosition.getObj() instanceof Malus) {
+				this.postEvent(new MalusRetrievedEvent((Malus) (newPosition
 						.getObj())));
 			} else if (newPosition.getObj() instanceof FinishLine) {
 				this.postEvent(new GameWinEvent(this));

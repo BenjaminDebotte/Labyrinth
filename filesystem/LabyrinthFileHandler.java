@@ -10,6 +10,10 @@ import java.io.ObjectOutputStream;
 
 import com.benjamindebotte.labyrinth.containers.Labyrinth;
 
+/**
+ * @author benjamindebotte
+ * Classe destinée à gérer le chargement et la sauvegarde de labyrinthes.
+ */
 public class LabyrinthFileHandler {
 
 	String path;

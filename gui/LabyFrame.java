@@ -18,12 +18,18 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
+import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
 
 import com.benjamindebotte.labyrinth.filesystem.LabyrinthFileHandler;
 import com.benjamindebotte.labyrinth.gameplay.Game;
 import com.benjamindebotte.labyrinth.gameplay.Game.GAME_STATE;
 
+/**
+ * @author benjamindebotte
+ * LabyFrame contient l'ensemble des éléments graphiques pour jouer au Labyrinthe. Elle met à disposition un menu et
+ * gère l'objet LabyComponent pour le rafraichissement basé sur un timer.
+ */
 public class LabyFrame extends JFrame {
 
 	class LabyMenuBar extends JMenuBar {
@@ -47,35 +53,7 @@ public class LabyFrame extends JFrame {
 
 		}
 		
-		class LabySpinner extends JSpinner {
-
-			/**
-			 * 
-			 */
-			private static final long serialVersionUID = -5822061973675736557L;
-
-			@Override
-			public Object getValue() {
-				return (int)super.getValue();
-			}
-
-			@Override
-			public Object getNextValue() {
-				return (int)getValue() + 2 > 0 ? (int)getValue() + 2 : getValue();			}
-
-			@Override
-			public Object getPreviousValue() {
-				return (int)getValue() - 2 > 0 ? (int)getValue() - 2 : getValue();
-			}
-			
-			@Override
-			public void setValue(Object obj) {
-				if((int)obj % 2 == 0)
-					throw new IllegalArgumentException("Les nombres pairs ne sont pas acceptés.");
-				super.setValue(obj);
-			}
-			
-		}
+		
 		
 		private static final long serialVersionUID = 1L;
 
@@ -94,8 +72,7 @@ public class LabyFrame extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 						try {
 							JPanel panel = new JPanel(new GridLayout(0, 2));
-							JSpinner spinnerL = new LabySpinner();
-							spinnerL.setValue((int)31);
+							JSpinner spinnerL = new JSpinner(new SpinnerNumberModel(31,11,99,2));
 							
 							panel.add(new JLabel("Taille des côtés : "));
 							panel.add(spinnerL);
@@ -105,10 +82,7 @@ public class LabyFrame extends JFrame {
 						    	int length = (int) spinnerL.getValue();
 						    	int width = length;
 						    	
-						    	
-						    	
-						    		LabyFrame.this.setComponent(new LabyComponent(new Game(
-									length,width ))); 
+						    	LabyFrame.this.setComponent(new LabyComponent(new Game(length,width ))); 
 						    }
 						} catch (Exception e1) {
 							JOptionPane.showMessageDialog(null, e1.getMessage(), e1.getClass().toString(), JOptionPane.ERROR_MESSAGE);
@@ -245,9 +219,10 @@ public class LabyFrame extends JFrame {
 
 		this.refreshGameStatus();
 		this.component.refreshGUI();
-
+		
 		this.revalidate();
 		this.repaint();
+
 
 	}
 
@@ -282,6 +257,7 @@ public class LabyFrame extends JFrame {
 		this.currentGame = this.component.getGame();
 		this.FRAME_RATE = this.currentGame.getGameRate() / 2;
 		this.initTimers();
+		
 	}
 
 }

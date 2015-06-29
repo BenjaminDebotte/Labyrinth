@@ -8,7 +8,7 @@ import com.benjamindebotte.labyrinth.events.Event;
 
 /**
  * @author benjamindebotte
- *
+ * Classe représentant un événement affectant le jeu : il contient des informations sur l'entité qui a provoqué l'événement.
  */
 public class GameEvent extends Event {
 

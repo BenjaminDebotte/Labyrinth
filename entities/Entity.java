@@ -7,7 +7,7 @@ import com.benjamindebotte.labyrinth.containers.Case;
 
 /**
  * @author benjamindebotte
- *
+ * La classe Entity représente un élément du labyrinthe qui a vocation d'être mobile (Player, Monster, ..).
  */
 public abstract class Entity extends LabyObject {
 

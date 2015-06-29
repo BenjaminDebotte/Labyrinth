@@ -7,7 +7,6 @@ import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 
-import com.benjamindebotte.exception.LabyException;
 import com.benjamindebotte.labyrinth.entities.Bonus;
 import com.benjamindebotte.labyrinth.entities.FinishLine;
 import com.benjamindebotte.labyrinth.entities.LabyObject;
@@ -15,7 +14,14 @@ import com.benjamindebotte.labyrinth.entities.Malus;
 import com.benjamindebotte.labyrinth.entities.Monster;
 import com.benjamindebotte.labyrinth.entities.Player;
 import com.benjamindebotte.labyrinth.entities.Wall;
+import com.benjamindebotte.labyrinth.exception.LabyException;
 
+/**
+ * @author benjamindebotte
+ * La classe Labyrinthe représente l'ensemble des éléments présents dans un labyrinthe et les mets en relation. Elle contient un objet Map pour établir 
+ * le plan de jeu, une liste d'éléments LabyObjects qui vont venir peupler ce plan, ainsi qu'un ensemble de paramètres pour définir le cadre du jeu (nombre de
+ * cases, position du jeu).
+ */
 /**
  * @author benjamindebotte
  *
@@ -23,9 +29,7 @@ import com.benjamindebotte.labyrinth.entities.Wall;
 public class Labyrinth implements Serializable {
 	/* Classe privée utilisée lors de la génération d'île */
 	private class LabyIslet extends LabyObject {
-		/**
-		 *
-		 */
+
 		private static final long serialVersionUID = 5067646912346942784L;
 		private final int value;
 
@@ -38,9 +42,7 @@ public class Labyrinth implements Serializable {
 		}
 	}
 
-	/**
-	 *
-	 */
+
 	private static final long serialVersionUID = 7093066492876133264L;
 	private final int BONUS_SCORE = 1000;
 	private final int MALUS_SCORE = -200;
@@ -50,6 +52,14 @@ public class Labyrinth implements Serializable {
 
 	private Player player;
 
+	
+	
+	/** Constructeur du labyrinthe. Celui-ci va générer un labyrinthe de taille length x width, tout en générant les murs, monstres, items et joueurs.
+	 * @param length
+	 * @param width
+	 * @throws LabyException
+	 * @throws IllegalArgumentException
+	 */
 	public Labyrinth(int length, int width) throws LabyException,
 	IllegalArgumentException {
 		this.map = new Map(length, width);
@@ -93,7 +103,7 @@ public class Labyrinth implements Serializable {
 
 	private void generateItems() {
 		int NB_ITEMS = this.map.getLength() / 3 + this.map.getWidth() / 3;
-		int NB_MALUS = this.map.getLength() / 5 + this.map.getWidth() / 5;
+		int NB_MALUS = this.map.getLength() / 20 + this.map.getWidth() / 20;
 
 		while (NB_ITEMS > 0 || NB_MALUS > 0) {
 			Case c = this.map.getCase(
@@ -106,24 +116,26 @@ public class Labyrinth implements Serializable {
 				continue;
 			}
 			
-			if((int)(Math.random()*3) == 1) {
+			if((int)(Math.random()*3) == 1 && NB_MALUS > 0) {
 				Malus b = new Malus(this.MALUS_SCORE);
 				this.assignObject(c, b);
 				NB_MALUS--;
 			} else {
-				Bonus b = new Bonus(this.BONUS_SCORE);
-				this.assignObject(c, b);
-				NB_ITEMS--;
+				if(NB_ITEMS > 0) {
+					Bonus b = new Bonus(this.BONUS_SCORE);
+					this.assignObject(c, b);
+					NB_ITEMS--;
+				}
 			}
 		}
 	}
 
 	private void generateLabyrinth() throws LabyException {
 		this.generateLevel();
-		this.generateMonsters();
-		this.generateItems();
 		this.addPlayer();
 		this.addFinishLine();
+		this.generateMonsters();
+		this.generateItems();
 	}
 
 	private void generateLevel() throws LabyException {

@@ -1,18 +1,13 @@
-/**
- *
- */
 package com.benjamindebotte.labyrinth.entities;
 
 import com.benjamindebotte.labyrinth.containers.Case;
 
 /**
  * @author benjamindebotte
- * Objet qui apporte des points une fois ramassé par un joueur.
+ * Représente un Malus dans le labyrinthe. Destiné à recevoir un nombre de points négatifs. 
  */
-public class Bonus extends LabyObject {
-	/**
-	 *
-	 */
+public class Malus extends LabyObject {
+
 	private static final long serialVersionUID = -2717684632262739793L;
 	private final int nbPoints;
 
@@ -20,7 +15,7 @@ public class Bonus extends LabyObject {
 	 * @param X
 	 * @param Y
 	 */
-	public Bonus(Case c, int nbPoints) {
+	public Malus(Case c, int nbPoints) {
 		super(c);
 		this.nbPoints = nbPoints;
 	}
@@ -28,7 +23,7 @@ public class Bonus extends LabyObject {
 	/**
 	 *
 	 */
-	public Bonus(int nbPoints) {
+	public Malus(int nbPoints) {
 		this.nbPoints = nbPoints;
 	}
 
